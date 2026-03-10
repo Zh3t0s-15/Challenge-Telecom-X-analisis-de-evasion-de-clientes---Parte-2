@@ -1,17 +1,29 @@
-# Telecom X – Análisis de evasión de clientes (Churn)
+# Telecom X – Análisis y predicción de cancelación (Churn)
 
-Proyecto de análisis de datos para el **Challenge 2 - Data Science LATAM**. El objetivo es analizar los datos de clientes de Telecom X, identificar factores asociados a la evasión (churn) y generar insights para reducir la cancelación.
+Proyecto completo de análisis de datos y **Machine Learning** para el **Challenge 2 - Data Science LATAM**. Incluye EDA, limpieza de datos y modelos predictivos para identificar clientes en riesgo de cancelar sus servicios en Telecom X.
 
 ---
 
-## Propósito del análisis
+## Resumen del proyecto
 
-- **Contexto:** La empresa Telecom X enfrenta una alta tasa de cancelaciones. Este proyecto forma parte del programa "Churn de Clientes".
+Este proyecto se divide en dos partes:
+
+| Parte | Descripción |
+|-------|-------------|
+| **Parte 1** | Extracción, transformación, limpieza de datos y análisis exploratorio (EDA) |
+| **Parte 2** | Preparación para modelado, entrenamiento de clasificadores y evaluación de resultados |
+
+---
+
+## Propósito
+
+- **Contexto:** Telecom X enfrenta una alta tasa de cancelaciones (churn). El objetivo es entender los factores asociados a la evasión y predecir qué clientes tienen mayor probabilidad de cancelar.
 - **Objetivos:**
-  - Importar y manipular datos desde la API (JSON).
-  - Aplicar conceptos de **ETL** (Extracción, Transformación, Carga).
-  - Realizar **análisis exploratorio (EDA)** y crear visualizaciones para identificar patrones.
-  - Generar un **informe** con conclusiones e insights que apoyen estrategias de retención y futuros modelos predictivos.
+  - Extraer y limpiar datos desde la API (JSON).
+  - Realizar **análisis exploratorio (EDA)** con visualizaciones.
+  - Entrenar **modelos de clasificación** para predecir la cancelación.
+  - Evaluar el rendimiento con métricas (accuracy, precisión, recall, F1-score).
+  - Interpretar la **importancia de variables** y proponer estrategias de retención.
 
 ---
 
@@ -20,91 +32,141 @@ Proyecto de análisis de datos para el **Challenge 2 - Data Science LATAM**. El 
 ```
 challenge2-telecom-churn/
 ├── README.md              # Este archivo
-├── TelecomX_Churn.ipynb    # Notebook con todo el análisis
+├── TelecomX_Churn.ipynb   # Notebook con EDA y modelado predictivo
 └── .gitignore
 ```
 
-**Contenido del notebook:**
+---
 
-1. Extracción de datos desde la API (JSON → DataFrame).
-2. Exploración de estructura y tipos de datos.
-3. Verificación de calidad (ausentes, duplicados, formato).
-4. Limpieza y tratamiento de datos.
-5. Creación de la columna `Cuentas_Diarias`.
-6. Estandarización opcional (Sí/No → 1/0).
-7. Análisis descriptivo (media, mediana, desviación estándar).
-8. Distribución de Churn (gráficos).
-9. Variables numéricas vs. Churn (boxplots).
-10. Análisis de correlación (opcional): matriz de correlación y dispersión.
-11. Informe final: introducción, limpieza, EDA, conclusiones y recomendaciones.
+## Contenido del notebook
+
+### Parte 1 – Análisis exploratorio (EDA)
+
+1. **Extracción:** Carga de datos desde la API (JSON → DataFrame).
+2. **Estructura:** Exploración de columnas y tipos de datos.
+3. **Calidad:** Verificación de ausentes, duplicados y formato.
+4. **Limpieza:** Conversión de tipos, imputación de ausentes y eliminación de duplicados.
+5. **Transformación:** Creación de variables derivadas (`cuenta_diaria`, binarios).
+6. **Análisis descriptivo:** Media, mediana, desviación estándar.
+7. **Distribución de cancelación:** Gráficos de barras y torta.
+8. **Variables numéricas vs cancelación:** Boxplots.
+9. **Correlación:** Matriz de correlación y gráficos de dispersión.
+10. **Informe EDA:** Conclusiones y recomendaciones iniciales.
+
+### Parte 2 – Modelado predictivo (Machine Learning)
+
+11. **Preparación para modelado:**
+    - Eliminación de columnas irrelevantes (ej. `id_cliente`).
+    - Codificación categórica (one-hot encoding).
+    - Análisis de balance de clases.
+12. **Entrenamiento de modelos:**
+    - **Regresión Logística** (con normalización `StandardScaler`).
+    - **Random Forest** (sin normalización).
+13. **Evaluación:**
+    - Métricas: Accuracy, precisión, recall, F1-score.
+    - Matrices de confusión.
+    - Análisis de importancia de variables.
+14. **Conclusiones estratégicas:** Factores de churn y estrategias de retención.
 
 ---
 
-## Gráficos e insights
+## Fuente de datos (API)
 
-- **Distribución de Churn:** proporción de clientes que permanecen vs. que se dan de baja (barras y pie).
-- **Variables numéricas vs. Churn:** boxplots de TotalCharges, tenure, MonthlyCharges y Cuentas_Diarias por grupo de Churn; permiten ver que menor tiempo de relación y menor gasto total se asocian más a evasión.
-- **Matriz de correlación:** relación entre variables numéricas y Churn (binario).
-- **Dispersión Cuentas_Diarias vs TotalCharges** coloreada por Churn.
-- **Cantidad de servicios contratados** y su relación con la probabilidad de churn (extra opcional).
+Los datos se obtienen de una API pública en formato JSON:
 
-**Conclusiones principales:** Los clientes con bajo tenure, contrato month-to-month y menor total gastado presentan mayor riesgo de churn. La cuenta diaria y el número de servicios contratados aportan información útil para retención y modelos predictivos.
+| Campo | Valor |
+|-------|-------|
+| **URL** | `https://raw.githubusercontent.com/ingridcristh/challenge2-data-science-LATAM/main/TelecomX_Data.json` |
+| **Formato** | JSON (estructura anidada por cliente) |
+| **Contenido** | Información de clientes, servicios contratados, cuentas y cancelación |
+
+No requiere autenticación ni archivos locales; la carga se hace directamente desde el notebook.
 
 ---
 
-## Instrucciones para ejecutar el notebook
+## Modelos de Machine Learning
 
-### Requisitos
+| Modelo | Normalización | Razón |
+|--------|---------------|-------|
+| **Regresión Logística** | Sí (`StandardScaler`) | Los modelos lineales son sensibles a la escala; la normalización evita que variables con magnitudes mayores dominen el modelo. |
+| **Random Forest** | No | Los árboles de decisión dividen por umbrales de cada variable por separado; la escala no afecta el resultado. |
 
-- **Python 3** (recomendado 3.8+).
-- Dependencias: `pandas`, `requests`, `matplotlib`, `seaborn`.
+### Métricas de evaluación
 
-### Opción 1: Google Colab (recomendada)
+- **Accuracy:** Porcentaje total de predicciones correctas.
+- **Precisión:** De los que el modelo predijo como churn, cuántos realmente cancelaron.
+- **Recall:** De los que realmente cancelaron, cuántos detectó el modelo.
+- **F1-score:** Media armónica entre precisión y recall; útil cuando las clases están desbalanceadas.
+- **Matriz de confusión:** Desglose de verdaderos positivos, falsos positivos, verdaderos negativos y falsos negativos.
+
+---
+
+## Variables principales (español)
+
+| Variable | Descripción |
+|----------|-------------|
+| `cancelacion` | Indica si el cliente canceló (Yes/No) |
+| `meses_tenencia` | Tiempo como cliente en meses |
+| `cargos_mensuales` | Cargos mensuales |
+| `cargos_totales` | Total facturado |
+| `cuenta_diaria` | Cargos mensuales / 30 |
+| `tipo_contrato` | Month-to-month, One year, Two year |
+| `metodo_pago` | Forma de pago |
+| `num_servicios` | Cantidad de servicios contratados |
+
+---
+
+## Requisitos e instalación
+
+### Dependencias
+
+- Python 3.8+
+- `pandas`, `requests`, `matplotlib`, `seaborn`, `scikit-learn`
+
+### Instalación
+
+```bash
+pip install pandas requests matplotlib seaborn scikit-learn
+```
+
+### Opción 1: Google Colab
 
 1. Abre [Google Colab](https://colab.research.google.com).
-2. **Archivo** → **Subir cuaderno** y selecciona `TelecomX_Churn.ipynb`.
-3. **Runtime** → **Run all** (o ejecuta celda por celda con Shift+Enter).
+2. Sube `TelecomX_Churn.ipynb` o ábrelo desde GitHub.
+3. Ejecuta todas las celdas (**Runtime → Run all**).
 
-Los datos se cargan desde la URL de la API; no hace falta subir archivos.
+Los datos se cargan automáticamente desde la API; no hace falta subir archivos.
 
 ### Opción 2: Ejecución local
 
-1. Clona o descarga este repositorio.
-2. Crea un entorno virtual (opcional) e instala dependencias:
+```bash
+git clone https://github.com/TU_USUARIO/challenge2-telecom-churn.git
+cd challenge2-telecom-churn
+pip install pandas requests matplotlib seaborn scikit-learn
+jupyter notebook TelecomX_Churn.ipynb
+```
 
-   ```bash
-   pip install pandas requests matplotlib seaborn
-   ```
+Ejecuta las celdas en orden de arriba hacia abajo.
 
-3. Abre el notebook con Jupyter Notebook o VS Code/Cursor:
+---
 
-   ```bash
-   jupyter notebook TelecomX_Churn.ipynb
-   ```
+## Conclusiones principales
 
-4. Ejecuta todas las celdas en orden.
-
-### Posibles problemas
-
-- **`requests` no encontrado:** instala con `pip install requests`.
-- **`seaborn` no encontrado:** instala con `pip install seaborn` (opcional; si no está, comenta o elimina la celda del heatmap).
-- **API no responde:** verifica conexión a internet; la URL usa el repositorio público de GitHub.
+- Los clientes con **menor tiempo de tenencia** y **menor total gastado** tienen mayor riesgo de cancelación.
+- El **tipo de contrato** (month-to-month) está fuertemente asociado al churn.
+- Los modelos de Regresión Logística y Random Forest permiten identificar variables clave para diseñar campañas de retención.
+- Recomendaciones: enfocar retención en clientes nuevos, incentivar contratos de largo plazo y usar alertas tempranas basadas en las variables más relevantes.
 
 ---
 
 ## Repositorio en GitHub
 
-Este proyecto está pensado para versionarse en GitHub. Después de clonar o crear el repo:
-
 ```bash
 git add .
-git commit -m "Análisis Churn Telecom X - ETL, EDA e informe"
-git remote add origin https://github.com/TU_USUARIO/challenge2-telecom-churn.git
-git push -u origin main
+git commit -m "Telecom X - EDA y modelos predictivos de churn"
+git push origin main
 ```
-
-(Ajusta `TU_USUARIO` y el nombre del repositorio.)
 
 ---
 
-Desarrollado como parte del Challenge 2 - Data Science LATAM (Telecom X).
+Desarrollado como parte del **Challenge 2 - Data Science LATAM** (Telecom X).
